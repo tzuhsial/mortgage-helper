@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refinance Calculator - Antonie's Refinance Helper</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="brand">Antonie's Refinance Helper</a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Refinance Calculator</a></li>
+                <li><a href="loan-estimate-guide.html">Loan Estimate Guide</a></li>
+                <li><a href="contact.html">Contact Us</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container dashboard-container">
+        <div class="column" id="current-loan-column">
+            <h2>Current Mortgage</h2>
+            <form id="current-loan-form">
+                <div class="form-group">
+                    <label>How would you like to provide your current loan details?</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="current-loan-method" value="manual" checked> Enter manually</label>
+                        <label><input type="radio" name="current-loan-method" value="calculate"> Calculate for me</label>
+                    </div>
+                </div>
+                <div id="manual-section">
+                     <p class="info-text instruction-box">Enter the details from your latest mortgage statement.</p>
+                    <div class="form-group">
+                        <label for="current-loan-balance">Current Loan Balance ($):</label>
+                        <input type="number" id="current-loan-balance" value="450000">
+                    </div>
+                    <div class="form-group">
+                        <label for="current-monthly-payment">Current Monthly Payment ($):</label>
+                        <input type="number" id="current-monthly-payment" value="2800" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="current-interest-rate">Current Annual Interest Rate (%):</label>
+                        <input type="number" id="current-interest-rate" value="6" step="0.01">
+                    </div>
+                </div>
+                <div id="calculate-section" style="display: none;">
+                    <p class="info-text instruction-box">We'll estimate your current balance.</p>
+                    <div class="form-group">
+                        <label for="original-loan-amount">Original Loan Amount ($):</label>
+                        <input type="number" id="original-loan-amount" value="500000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="original-loan-term">Original Loan Term (years):</label>
+                        <input type="number" id="original-loan-term" value="30" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="original-interest-rate">Annual Interest Rate (%):</label>
+                        <input type="number" id="original-interest-rate" value=6 step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loan-start-date">Loan Start Date:</label>
+                        <input type="date" id="loan-start-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label><input type="checkbox" id="has-extra-payments"> I've made extra payments.</label>
+                    </div>
+                    <div class="form-group" id="extra-payment-section" style="display: none;">
+                        <label for="extra-monthly-payment">Average Extra Monthly Payment ($):</label>
+                        <input type="number" id="extra-monthly-payment" value="100">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="column" id="new-loan-column">
+            <h2>New Loan Offer</h2>
+            <p class="info-text">Enter the details of the refinance offer you are considering.</p>
+            <form id="new-loan-form">
+                <div class="form-group">
+                    <label for="new-loan-amount">New Loan Amount ($):</label>
+                    <input type="number" id="new-loan-amount" value="450000" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-loan-term">New Loan Term (years):</label>
+                    <input type="number" id="new-loan-term" value="30" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-interest-rate">New Annual Interest Rate (%):</label>
+                    <input type="number" id="new-interest-rate" step="0.01" value="5" required>
+                </div>
+                <div class="form-group">
+                    <label for="refinance-closing-cost">Closing Costs ($):</label>
+                    <input type="number" id="refinance-closing-cost" value="5000" required>
+                </div>
+
+                <div class="form-group">
+                    <label><input type="checkbox" id="show-advanced-options"> Show Advanced Options</label>
+                </div>
+
+                <div id="advanced-options-section" style="display: none;">
+                    <div class="form-group">
+                        <label><input type="checkbox" id="roll-in-costs"> Roll closing costs into loan amount</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="discount-points">Discount Points:</label>
+                        <input type="number" id="discount-points" value="0" step="0.5">
+                        <p class="info-text">Discount points are prepaid interest. One point costs 1% of the loan amount and is added to your closing costs, typically in exchange for a lower interest rate.</p>
+                        <p class="info-text"><strong>Note:</strong> The calculator assumes 1 point reduces the interest rate by 0.25%. This is an assumption and varies by lender. Always verify with your lender.</p>
+                        <p class="info-text" id="points-cost-display"></p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="container results-container">
+        <h2>Results</h2>
+        <div id="results-content">
+             <div class="side-by-side">
+                <div id="original-result">
+                    <h3>Current Mortgage</h3>
+                    <div id="original-monthly-payment"></div>
+                    <div id="original-total-interest"></div>
+                </div>
+                <div id="refinance-result">
+                    <h3>New Loan</h3>
+                    <div id="refinance-monthly-payment"></div>
+                    <div id="refinance-total-interest"></div>
+                    <div id="refinance-final-loan-amount"></div>
+                    <div id="refinance-effective-interest-rate"></div>
+                    <div id="refinance-total-closing-costs"></div>
+                    <div id="refinance-cash-to-close"></div>
+                </div>
+            </div>
+            <div id="monthly-savings"></div>
+            <div id="refinance-breakeven-point"></div>
+            <div class="side-by-side chart-container">
+                <canvas id="monthly-payment-chart"></canvas>
+                <canvas id="total-interest-chart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
